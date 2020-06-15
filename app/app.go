@@ -27,7 +27,6 @@ func (a *App) Initialize() {
 	a.setRouters()
 }
 
-
 func (a *App) Run(host string) {
 	cors := handlers.CORS(
 		handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Authorization"}),
@@ -36,10 +35,8 @@ func (a *App) Run(host string) {
 		handlers.AllowCredentials(),
 	)(a.Router)
 
-
 	log.Fatal(http.ListenAndServe(host, cors))
 }
-
 
 func (a *App) Get(path string, f func(w http.ResponseWriter, r *http.Request)) {
 	a.Router.HandleFunc(path, f).Methods("GET")
@@ -64,6 +61,8 @@ func (a *App) setRouters() {
 	a.Post("/api/clear", a.Clear)
 	a.Post("/api/sign", a.PostSign)
 	a.Get("/api/sign/{uuid}", a.GetSign)
+	a.Post("/api/schema", a.PostSchema)
+	a.Get("/api/schema/{uuid}", a.GetSchema)
 }
 
 func (a *App) Clear(w http.ResponseWriter, r *http.Request) {
@@ -76,4 +75,12 @@ func (a *App) GetSign(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) PostSign(w http.ResponseWriter, r *http.Request) {
 	h.PostSign(a.DB, w, r)
+}
+
+func (a *App) GetSchema(w http.ResponseWriter, r *http.Request) {
+	h.GetSchema(a.DB, w, r)
+}
+
+func (a *App) PostSchema(w http.ResponseWriter, r *http.Request) {
+	h.PostSchema(a.DB, w, r)
 }

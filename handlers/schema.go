@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func GetSign(db *gorm.DB, w http.ResponseWriter, req *http.Request) {
+func GetSchema(db *gorm.DB, w http.ResponseWriter, req *http.Request) {
 	vars := mux.Vars(req)
 
 	uuid, ok := vars["uuid"]
@@ -17,33 +17,33 @@ func GetSign(db *gorm.DB, w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	var dbSignature models.Signature
-	db.First(&dbSignature, "uuid = ?", uuid)
+	var dbSchema models.Schema
+	db.First(&dbSchema, "uuid = ?", uuid)
 
-	if dbSignature.ID == 0 {
+	if dbSchema.ID == 0 {
 		ReturnError(w, http.StatusNotFound, "Not found")
 		return
 	}
 
-	ReturnResult(w, dbSignature)
+	ReturnResult(w, dbSchema)
 }
 
-func PostSign(db *gorm.DB, w http.ResponseWriter, req *http.Request) {
+func PostSchema(db *gorm.DB, w http.ResponseWriter, req *http.Request) {
 
-	var signature models.Signature
-	var dbSignature models.Signature
-	err := json.NewDecoder(req.Body).Decode(&signature)
+	var schema models.Schema
+	var dbSchema models.Schema
+	err := json.NewDecoder(req.Body).Decode(&schema)
 	if err != nil {
 		ReturnError(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	if !db.Where("uuid = ?", signature.UUID).First(&dbSignature).RecordNotFound() {
+	if !db.Where("uuid = ?", schema.UUID).First(&dbSchema).RecordNotFound() {
 		ReturnError(w, http.StatusForbidden, "Already exists")
 		return
 	}
 
-	db.Create(&signature)
+	db.Create(&schema)
 
 	ReturnResult(w, true)
 }
